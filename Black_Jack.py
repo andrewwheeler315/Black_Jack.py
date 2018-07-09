@@ -2,14 +2,14 @@ from random import shuffle
 
 
 def deck():
-    A = 11
+    'Ace'
     K = 10
     Q = 10
     J = 10
     cards = [
-        2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K, A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J,
-        Q, K, A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K, A, 2, 3, 4, 5, 6, 7, 8,
-        9, 10, J, Q, K, A
+        2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K, 'Ace', 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        J, Q, K, 'Ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K, 'Ace', 2, 3, 4, 5,
+        6, 7, 8, 9, 10, J, Q, K, 'Ace'
     ]
     return cards
 
@@ -18,52 +18,104 @@ def black_jack():
     cards = deck()
     for _ in range(11):
         shuffle(cards)
-    player_hand = cards[:2]
+    player1_hand = cards[:2]
     dealer_hand = cards[50:]
-    print(player_hand)
-    print(dealer_hand)
+    print(player1_hand)
+    print(dealer_hand[0], '?')
+    player1_turn(player1_hand, cards)
+    dealers_turn(dealer_hand, cards)
+    who_wins(player1_hand, dealer_hand)
 
 
-def hit_me():
-    print('Hit me or Stay? ')
-    if input() == 'Hit me':
-        deal_cards()
-    if input() == 'Stay':
-        return player_hand()
+def player1_turn(player1_hand, cards):
+    while True:
+        print("Player 1's turn")
+        deal = input('Hit me or Stay? ').capitalize().strip()
+        if deal == 'Hit me':
+            player1_hand.append(cards.pop())
+            total = hand_value(player1_hand)
+            print(player1_hand)
+            if total > 21:
+                print('Bust')
+                break
+            elif total == 21:
+                print('BLACKJACK!')
+                break
+            continue
+            print("Player's Hand", player1_hand)
+        elif deal == 'Stay':
+            break
+        else:
+            print('Hit me or Stay? ')
+        return player1_hand
 
 
-def deal_cards():
-    if hit_me() == 'Hit me':
-        player_hand.append(cards[:1])
-    if hit_me() == 'Stay':
-        return player_hand
+def betting():
+    while True:
+        bet = input('How many caps are you exchanging for chips? ')
+        if bet.isdigit()
 
 
-def player_hand():
-    player_hand = deck()[:2]
-    while player_hand < 21:
-        deal_cards()
+def dealers_turn(dealer_hand, cards):
+    while True:
+        print("Dealer's turn")
+        if hand_value(dealer_hand) < 17:
+            dealer_hand.append(cards.pop())
+            print("Dealer's hand:", dealer_hand[0], '?', dealer_hand[2:],
+                  hand_value(dealer_hand))
+        else:
+            break
 
 
-def dealer_hand():
-    dealer_hand = cards[50:]
-    while dealer_hand < 17:
-        deal_cards()
+def hand_value(hand):
+    hand_total = 0
+    aces = 0
+    for card in hand:
+        if card == 'Ace':
+            aces += 1
+        else:
+            hand_total = hand_total + card
+    if aces == 0:
+        return hand_total
+    else:
+        gap = 11 + (aces - 1)
+        if hand_total + gap <= 21:
+            return hand_total + gap
+        else:
+            return hand_total + aces
 
 
 def black_jack_greetings():
-    input('Would you like to join us for a game of Blackjack? ')
-    if input() == 'Yes':
-        print(tutorial())
-    if input() == 'No':
-        print('Then I hope you have a glorious day sir. ')
+    while True:
+        response = input('Would you like to join us for a game of Blackjack? ')
+        if response == 'Yes':
+            print('Then welcome to the Sierra Madre Casino. ')
+            return response
+        if response == 'No':
+            print('Then I hope you have a glorious day sir. ')
+            exit()
+        else:
+            print('Yes or No ')
 
 
-def who_wins():
-    if dealer_hand > 17:
-        print('YOU BUST DEALER! PLAYER YOU WIN! ')
-    if player_hand > 21:
-        print('YOU BUST PLAYER! DEALER YOU WIN! ')
+def who_wins(player1_hand, dealer_hand):
+    player, dealer = hand_value(player1_hand), hand_value(dealer_hand)
+    print('Player{}, total {} '.format(player1_hand, player))
+    print('Dealer{}, total {} '.format(dealer_hand, dealer))
+    if player > 21:
+        print('Bust')
+        print('Dealer Wins!')
+    elif player == 21 and dealer != 21:
+        print('BLACKJACK!!')
+    elif dealer > 17:
+        print('Bust')
+        print('You Win!')
+    elif dealer == player:
+        print('Push')
+    elif player > dealer:
+        print('You Win!')
+    else:
+        print('Dealer Wins!')
 
 
 def tutorial():
@@ -78,9 +130,10 @@ def tutorial():
 
 
 def main():
-    black_jack()
-    hit_me()
-    cards = deck()
+    while True:
+        choice = black_jack_greetings()
+        if choice == 'Yes':
+            black_jack()
 
 
 if __name__ == '__main__':
